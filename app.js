@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 
 app.use('/api', user_routes);
 
-app.post('/probando', (req, res) => {
+app.get('/probando', (req, res) => {
     res.status(200).send({
         message: 'Este es el metodo probando'
     });
