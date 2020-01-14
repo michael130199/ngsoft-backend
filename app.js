@@ -6,7 +6,7 @@ var bodyParser = require('body-parser');
 var app = express();
 
 // cargar Rutas
-var user_routes = require('./routes/user');
+var user_routes = require('./routes/user.route');
 
 
 //middlewares de body-parser
