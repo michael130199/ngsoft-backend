@@ -3,6 +3,7 @@
 // modulos
 var bcrypt = require('bcrypt-nodejs');
 var fs = require('fs');
+var path = require('path'); 
 
 //modelos
 var User = require('../models/user.model');
@@ -183,7 +184,32 @@ function uploadImage(req, res) {
 }
 
 function getImageFile(req, res) {
-    res.status(200).send({ message: 'get ima'});
+
+    var imageFile = req.params.imageFile;
+    var path_file = './uploads/users/'+imageFile;
+
+    fs.exists(path_file, (exists)=> {
+        if(exists) {
+            res.sendFile(path.resolve(path_file));
+        } else {
+            res.status(404).send({ message: 'la imagen no existe'});
+        }
+    });
+}
+
+function getKeepers(req, res) {
+    User.find({role: 'ROLE_ADMIN'}).exec((err, users) => {
+        if(err) {
+            res.status(500).send({ message: 'Error en la peticions'});
+
+        }else {
+            if (!users) {
+                res.status(404).send({ message: 'no hay cuidadores'});
+            } else {
+                res.status(200).send({ users });
+            }
+        }
+    });
 
 }
 
@@ -194,5 +220,6 @@ module.exports = {
     login,
     updateUser,
     uploadImage,
-    getImageFile
+    getImageFile,
+    getKeepers
 };
