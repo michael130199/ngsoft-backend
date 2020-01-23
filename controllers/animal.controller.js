@@ -20,8 +20,12 @@ function pruebas(req, res) {
     });
 }
 
+function saveAnimal(req, res) {
+    res.status(200).send({message: 'Save Animal'});
+}
 
 //exportar
 module.exports = {
-    pruebas
+    pruebas,
+    saveAnimal
 };

@@ -9,6 +9,7 @@ var md_auth = require('../middlewares/authenticated');
 var multipart = require('connect-multiparty');
 var md_upload = multipart({ uploadDir: './uploads/animals'})
 
-api.get('/prueba-del-controlador', md_auth.ensureAuth, AnimalController.pruebas);
+api.get('/prueba-animal', md_auth.ensureAuth, AnimalController.pruebas);
+api.post('/save-animal', AnimalController.saveAnimal);
 
 module.exports = api;
