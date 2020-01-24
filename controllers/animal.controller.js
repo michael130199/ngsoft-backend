@@ -21,11 +21,87 @@ function pruebas(req, res) {
 }
 
 function saveAnimal(req, res) {
-    res.status(200).send({message: 'Save Animal'});
+    var animal = new Animal();
+    var params = req.body;
+
+    if(params.name) {
+        animal.name = params.name;
+        animal.description = params.description;
+        animal.year = params.year;
+        animal.nickname = params.nickname;
+        animal.image = null;
+        animal.user = req.user.sub;
+
+        animal.save((err, userStored) => {
+            if(err) {
+                res.status(500).send({message: 'Error en el servidor'});
+            } else {
+                if(!userStored) {
+                    res.status(404).send({message: 'No se ha registrado el animal'});
+                } else {
+                    res.status(200).send({animal: userStored}); 
+                }
+            }
+        });
+    }else {
+        res.status(200).send({message: 'El nombre es obligatorio'});
+    }
+    
+}
+
+function getAnimals(req, res) {
+
+    Animal.find({}).populate({path: 'user'}).exec((err, animals) => {
+        if(err) {
+            res.status(500).send({message: 'Error en la peticion'});
+        } else {
+            if (!animals) {
+                res.status(404).send({message: 'No hay animales'});
+            } else {
+                res.status(200).send({ animals });
+            }
+        }
+    });
+}
+
+function getAnimal(req, res) {
+    var animalId = req.params.id;
+    Animal.findById( animalId ).populate({path: 'user'}).exec((err, animal) => {
+        if(err) {
+            res.status(500).send({message: 'Error en la peticion'});
+        } else {
+            if (!animal) {
+                res.status(404).send({message: 'El animal no existe'});
+            } else {
+                res.status(200).send({ animal });
+            }
+        }
+    });
+}
+
+function updateAnimal(req, res){
+    var animalId = req.params.id;
+    var update = req.body;
+
+    Animal.findByIdAndUpdate(animalId, update, {new: true}, (err, animalUpdate) => {
+        if (err) {
+            res.status(500).send({ message: 'Error al actualizar animal' });
+        } else {
+            if(!animalUpdate) {
+                res.status(404).send({ message: 'No se a podido actualizar el animal' });
+            } else {
+                res.status(200).send({ animal: animalUpdate });
+            }
+        }
+    });
+
 }
 
 //exportar
 module.exports = {
     pruebas,
-    saveAnimal
+    saveAnimal, 
+    getAnimals,
+    getAnimal,
+    updateAnimal
 };
