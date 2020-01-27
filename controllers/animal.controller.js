@@ -97,11 +97,62 @@ function updateAnimal(req, res){
 
 }
 
+function uploadImage(req, res) {
+
+    var animalId = req.params.id;
+    var file_name = 'No subido...';
+
+    if (req.files) {
+        var file_path = req.files.image.path;
+        var file_split = file_path.split('/');
+        file_name = file_split[2];
+
+        var ext_split = file_name.split('\.');
+        var file_ext = ext_split[1];
+
+        if(file_ext == 'png' || file_ext == 'jpg' || file_ext == 'jpeg' || file_ext == 'gif') {
+            
+            // console.log(req.user);
+            // if(animalId != req.animal.user) {
+            //     return res.status(500).send({ message: 'No tienes permiso para actualizar el animal'});
+            // }
+
+            Animal.findOneAndUpdate(animalId, {image: file_name}, {new: true},  (err, animalUpdated) => {
+                if (err) {
+                    res.status(500).send({message: 'Error al actualizar el animal'});
+                } else {
+
+                    if (!animalUpdated) {
+                        res.status(404).send({ message: 'No se a podido actualizar el animal'});
+                    }else {
+                        res.status(200).send({ user: animalUpdated, image: file_name});
+                    }
+                }
+            });
+
+        } else {
+            fs.unlink(file_path, (err) => {
+                if (err) {
+                    res.status(200).send({ message: 'Extension no valida y fichero no borrado'});
+                } else {
+                    res.status(200).send({ message: 'Extension no valida'});
+                }
+            });
+            
+        }
+
+    } else {
+        res.status(200).send({ message: 'No se ha subido el archivo'});
+    }
+
+}
+
 //exportar
 module.exports = {
     pruebas,
     saveAnimal, 
     getAnimals,
     getAnimal,
-    updateAnimal
+    updateAnimal,
+    uploadImage
 };
