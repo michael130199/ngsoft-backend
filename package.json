@@ -20,5 +20,9 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/michael130199/ngsoft-backend.git"
   }
 }
