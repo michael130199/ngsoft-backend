@@ -97,16 +97,18 @@ function login(req, res) {
                                 token: jwt.createToken(user)
                             });
                         } else {
+                            user.password = '';
+
                             res.status(200).send({ user });
                         }
                     }else {
                         res.status(404).send({ 
-                            message: 'el usuario no a podido loguearse correctamente'
+                            message: 'contraseña erronea'
                         });
                     }
                 });
             } else {
-                res.status(404).send({ message: 'el usuario no a podido loguearse'});
+                res.status(404).send({ message: 'el usuario no a podido loguearse, no esta en la bd'});
             }
         }
     });
@@ -116,6 +118,8 @@ function updateUser(req, res) {
 
     var userId = req.params.id;
     var update = req.body;
+
+    delete update.password;
 
     if(userId != req.user.sub) {
         return res.status(500).send({ message: 'No tienes permiso para actualizar el usuario'});
@@ -140,11 +144,12 @@ function uploadImage(req, res) {
     var file_name = 'No subido...';
 
     if (req.files) {
+
         var file_path = req.files.image.path;
-        var file_split = file_path.split('/');
+        var file_split = file_path.split('\\');
         file_name = file_split[2];
 
-        var ext_split = file_name.split('\.');
+        var ext_split = file_name.split('.');
         var file_ext = ext_split[1];
 
         if(file_ext == 'png' || file_ext == 'jpg' || file_ext == 'jpeg' || file_ext == 'gif') {
@@ -153,7 +158,7 @@ function uploadImage(req, res) {
                 return res.status(500).send({ message: 'No tienes permiso para actualizar el usuario'});
             }
 
-            User.findOneAndUpdate(userId, {image: file_name}, {new: true},  (err, userUpdated) => {
+            User.findByIdAndUpdate(userId, {image: file_name}, {new: true},  (err, userUpdated) => {
                 if (err) {
                     res.status(500).send({message: 'Error al actualizar usuario'});
                 } else {
