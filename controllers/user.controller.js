@@ -191,7 +191,7 @@ function uploadImage(req, res) {
 function getImageFile(req, res) {
 
     var imageFile = req.params.imageFile;
-    var path_file = './uploads/users/'+imageFile;
+    var path_file = './uploads/users/'+ imageFile;
 
     fs.exists(path_file, (exists)=> {
         if(exists) {
@@ -203,21 +203,20 @@ function getImageFile(req, res) {
 }
 
 function getKeepers(req, res) {
-    User.find({role: 'ROLE_ADMIN'}).exec((err, users) => {
+    User.find({role: 'ROLE_ADMIN'}).exec((err, keepers) => {
         if(err) {
             res.status(500).send({ message: 'Error en la peticions'});
 
         }else {
-            if (!users) {
+            if (!keepers) {
                 res.status(404).send({ message: 'no hay cuidadores'});
             } else {
-                res.status(200).send({ users });
+                res.status(200).send({ keepers });
             }
         }
     });
 
 }
-
 
 module.exports = {
     pruebas,

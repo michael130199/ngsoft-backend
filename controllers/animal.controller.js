@@ -104,7 +104,7 @@ function uploadImage(req, res) {
 
     if (req.files) {
         var file_path = req.files.image.path;
-        var file_split = file_path.split('/');
+        var file_split = file_path.split('\\');
         file_name = file_split[2];
 
         var ext_split = file_name.split('\.');
@@ -117,7 +117,7 @@ function uploadImage(req, res) {
             //     return res.status(500).send({ message: 'No tienes permiso para actualizar el animal'});
             // }
 
-            Animal.findOneAndUpdate(animalId, {image: file_name}, {new: true},  (err, animalUpdated) => {
+            Animal.findByIdAndUpdate(animalId, {image: file_name}, {new: true},  (err, animalUpdated) => {
                 if (err) {
                     res.status(500).send({message: 'Error al actualizar el animal'});
                 } else {
@@ -147,6 +147,36 @@ function uploadImage(req, res) {
 
 }
 
+function getImageFile(req, res) {
+
+    var imageFile = req.params.imageFile;
+
+    if(imageFile != '350'){
+        var path_file = './uploads/animals/'+ imageFile;
+
+
+        fs.exists(path_file, (exists)=> {
+            if(exists) {
+                res.sendFile(path.resolve(path_file));
+            } else {
+    
+                res.status(404).send({ message: 'la imagen no existe'});
+            }
+        });
+    } else {
+        var path_file = './assets/350x350.png';
+
+        fs.exists(path_file, (exists)=> {
+            if(exists) {
+                res.sendFile(path.resolve(path_file));
+            } else {
+    
+                res.status(404).send({ message: 'la imagen no existe'});
+            }
+        });
+    }
+}
+
 function deleteAnimal(req, res) {
     var animalId = req.params.id;
 
@@ -173,5 +203,6 @@ module.exports = {
     getAnimal,
     updateAnimal,
     uploadImage,
-    deleteAnimal
+    deleteAnimal,
+    getImageFile
 };
